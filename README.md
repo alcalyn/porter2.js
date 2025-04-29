@@ -33,50 +33,49 @@ const word = stem('animadversion')
 console.log(word) //=> animadvers
 ```
 
-This stemmer expects lowercase text.
+This stemmer expects a lowercase English word.
 
 The code is compatible with ES5. TypeScript type declarations are included.
 
 ## Benchmarks
 
-On my machine, the 29.4k test suite executes in ~9.5ms (~3M/s throughput) in a
-hot loop (~70ms for the first run).
+On my machine, the 29.4k test suite executes in ~5.25ms (~5.6M/s throughput) in
+a hot loop (~31ms for the first run).
 
 Here is a comparison with some other libraries (you probably should take it with
 a little grain of salt):
 
 | library                              | throughput (node) | throughput (bun) |
 | ------------------------------------ | ----------------- | ---------------- |
-| porter2.js                           | 3118 kops/s       | 3283 kops/s      |
-| [stemr][]                            | 342 kops/s        | 367 kops/s       |
-| [wink-porter2-stemmer][] [^1]        | 162 kops/s        | 174 kops/s       |
+| porter2 1.0.3                        | 5621 kops/s       | 6780 kops/s      |
+| [stemr][] 1.0.0                      | 840 kops/s        | 920 kops/s       |
+| [wink-porter2-stemmer][] [^1] 2.0.1  | 340 kops/s        | 420 kops/s       |
 
 [stemr]: https://github.com/localvoid/stemr
 [wink-porter2-stemmer]: https://github.com/winkjs/wink-porter2-stemmer
 
-Here are libraries that implement older porter 1 (note the behavior is not
-identical):
+Here are libraries that implement older porter version 1 (note the behavior is
+not identical):
 
 | library                              | throughput (node) | throughput (bun) |
 | ------------------------------------ | ----------------- | ---------------- |
-| [porter-stemmer-js][] [^2]           | 1422 kops/s       | 1484 kops/s      |
-| [stemmer][] [^3]                     | 1064 kops/s       | 623 kops/s       |
-| [@stdlib/nlp-porter-stemmer][]       | 842 kops/s        | 685 kops/s       |
-| [porter-stemmer][]                   | 497 kops/s        | 520 kops/s       |
+| [porter-stemmer-js][] [^2] 1.1.2     | 3280 kops/s       | 3373 kops/s      |
+| [stemmer][] [^3] 2.0.1               | 2100 kops/s       | 1549 kops/s      |
+| [@stdlib/nlp-porter-stemmer][] 0.2.2 | 1712 kops/s       | 1604 kops/s      |
+| [porter-stemmer][] 0.9.1             | 951 kops/s        | 1264 kops/s      |
 
 [porter-stemmer-js]: https://github.com/evi1Husky/PorterStemmer
 [stemmer]: https://github.com/words/stemmer
 [@stdlib/nlp-porter-stemmer]: https://github.com/stdlib-js/nlp-porter-stemmer
 [porter-stemmer]: https://github.com/jedp/porter-stemmer
 
-The benchmark code is in `bench/run.mjs`.
-
-This is tested with Node.js v20.12.2 and bun v1.1.4. The library versions are
-latest as of 2024-04-29.
+The benchmark code is in `bench/run.mjs`. This is tested with Node.js v22.14.0
+and bun v1.2.10 on Zen 3 (4.5 GHz boosted). The library versions are latest as
+of 2025-04-29.
 
 [^1]: `wink-porter2-stemmer` is 99.97% porter2 compliant (fails on `'` cases only)
 
 [^2]: That one has similar goals and, surprisingly, was published just 3 days
-before this package was released! (And after I started working on porter2.js.)
+before this package! (And after the author started working on porter2.js.)
 
 [^3]: ESM only

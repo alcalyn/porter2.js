@@ -1,6 +1,6 @@
 {
   "name": "porter2",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Fastest JavaScript implementation of the porter2 stemmer",
   "main": "dist/index.js",
   "types": "index.d.ts",
@@ -26,11 +26,12 @@
     "snowball"
   ],
   "devDependencies": {
+    "@stdlib/nlp-porter-stemmer": "^0.2.2",
     "porter-stemmer": "^0.9.1",
-    "porter-stemmer-js": "^1.1.1",
+    "porter-stemmer-js": "^1.1.2",
     "stemmer": "^2.0.1",
     "stemr": "^1.0.0",
-    "typescript": "^5.4.5",
+    "typescript": "^5.8.3",
     "wink-porter2-stemmer": "^2.0.1"
   },
   "author": "eilvelia <hi@eilvelia.cat>",
