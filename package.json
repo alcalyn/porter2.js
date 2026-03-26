@@ -33,7 +33,7 @@
     "porter-stemmer-js": "^1.1.2",
     "stemmer": "^2.0.1",
     "stemr": "^1.0.0",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.2",
     "wink-porter2-stemmer": "^2.0.1"
   },
   "author": "eilvelia <hi@eilvelia.cat>",
