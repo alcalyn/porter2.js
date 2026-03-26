@@ -20,7 +20,7 @@ Import using CommonJS:
 const { stem } = require('porter2')
 ```
 
-Or, import using EcmaScript Modules (through interopability with CommonJS):
+Or, import using EcmaScript Modules (through interoperability with CommonJS):
 
 ```javascript
 import { stem } from 'porter2'
@@ -54,7 +54,7 @@ a little grain of salt):
 [stemr]: https://github.com/localvoid/stemr
 [wink-porter2-stemmer]: https://github.com/winkjs/wink-porter2-stemmer
 
-Here are libraries that implement older porter version 1 (note the behavior is
+Here are libraries that implement the older porter version 1 (note the behavior is
 not identical):
 
 | library                              | throughput (node) | throughput (bun) |
@@ -69,9 +69,8 @@ not identical):
 [@stdlib/nlp-porter-stemmer]: https://github.com/stdlib-js/nlp-porter-stemmer
 [porter-stemmer]: https://github.com/jedp/porter-stemmer
 
-The benchmark code is in `bench/run.mjs`. This is tested with Node.js v22.14.0
-and bun v1.2.10 on Zen 3 (4.5 GHz boosted). The library versions are latest as
-of 2025-04-29.
+The benchmark code is in `bench/run.mjs`. This was tested with Node.js v22.14.0
+and bun v1.2.10 on Zen 3 (4.5 GHz boosted).
 
 [^1]: `wink-porter2-stemmer` is 99.97% porter2 compliant (fails on `'` cases only)
 
