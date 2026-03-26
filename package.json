@@ -8,6 +8,7 @@
     "build": "node preprocess.js",
     "lint": "tsc",
     "test": "npm run build && node test/run.mjs && tsc",
+    "test:coverage": "npm run build && c8 --reporter text --reporter html node test/run.mjs",
     "prepare": "npm test"
   },
   "files": [
@@ -27,6 +28,7 @@
   ],
   "devDependencies": {
     "@stdlib/nlp-porter-stemmer": "^0.2.2",
+    "c8": "^11.0.0",
     "porter-stemmer": "^0.9.1",
     "porter-stemmer-js": "^1.1.2",
     "stemmer": "^2.0.1",
