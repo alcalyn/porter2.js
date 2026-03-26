@@ -112,7 +112,6 @@ exports.stem = function stem(word) {
   // > R2 is the region after the first non-vowel following a vowel in R1,
   // > or the end of the word if there is no such non-vowel.
   var r2 = r1
-  var found_v = false
   while (r2 < l && !is_v(w[r2])) ++r2
   while (r2 < l && is_v(w[r2])) ++r2
   if (r2 < l) ++r2
