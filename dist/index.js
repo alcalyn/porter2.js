@@ -58,7 +58,7 @@ exports.stem = function stem(word) {
   // exception1
   if (word.length <= 6) {
     switch (word) {
-      case 'ski': return 'ski'
+      case 'skis': return 'ski'
       case 'skies': return 'sky'
       case 'dying': return 'die'
       case 'lying': return 'lie'
