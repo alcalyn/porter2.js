@@ -6,9 +6,9 @@
   "types": "index.d.ts",
   "scripts": {
     "build": "node preprocess.js",
-    "test": "node test/run.mjs",
     "lint": "tsc",
-    "prepare": "npm run build"
+    "test": "npm run build && node test/run.mjs && tsc",
+    "prepare": "npm test"
   },
   "files": [
     "dist",
