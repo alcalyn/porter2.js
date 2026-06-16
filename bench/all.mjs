@@ -24,17 +24,6 @@ const libs = process.env.LIBRARIES
 
 const label = name => name === '../dist/index.js' ? 'porter2' : name
 
-function version(name) {
-  try {
-    const pkg = name === '../dist/index.js'
-      ? path.join(__dirname, '..', 'package.json')
-      : path.join(__dirname, '..', 'node_modules', name, 'package.json')
-    return JSON.parse(fs.readFileSync(pkg)).version
-  } catch {
-    return ''
-  }
-}
-
 // node is this process's binary; bun is taken from PATH
 const runtimeVersion = cmd => {
   try {
@@ -74,7 +63,7 @@ for (const rt of runtimes) {
 }
 
 const fmt = (x, w) => String(x).padStart(w)
-const slowerStr = ratio => (ratio < 10 ? ratio.toFixed(2) : ratio.toFixed(0)) + '×'
+const slowerStr = ratio => ratio.toFixed(3) + '×'
 
 // one table per runtime
 function printTable(name, rs) {
@@ -100,29 +89,69 @@ function printTable(name, rs) {
 }
 for (const rt of runtimes) printTable(rt.name, results[rt.name])
 
-// another combined markdown table
 const byName = new Map()
 for (const rt of runtimes)
   for (const r of results[rt.name]) {
     if (!byName.has(r.name)) byName.set(r.name, {})
     byName.get(r.name)[rt.name] = r.kopsMax
   }
+const ref = Math.max(0, ...[...byName.values()].map(v => v.node ?? v.bun ?? 0))
 
-const entries = [...byName.entries()].sort((a, b) => (b[1].node ?? 0) - (a[1].node ?? 0))
-if (entries.length) {
-  const ref = Math.max(...entries.map(([, v]) => v.node ?? v.bun ?? 0))
-  const thru = v => v == null ? '' : `${v.toFixed(0)} kops/s`
-  const cols = [
-    ['library', ([name]) => `${label(name)} ${version(name)}`.trim()],
-    ['throughput (node)', ([, v]) => thru(v.node)],
-    ['throughput (bun)', ([, v]) => thru(v.bun)],
-    ['slower', ([, v]) => v.node || v.bun ? slowerStr(ref / (v.node ?? v.bun)) : '']
-  ]
-  const cells = entries.map(e => cols.map(([, f]) => f(e)))
-  const widths = cols.map(([h], i) => Math.max(h.length, ...cells.map(row => row[i].length)))
-  const line = arr => '| ' + arr.map((c, i) => c.padEnd(widths[i])).join(' | ') + ' |'
-  console.log('')
-  console.log(line(cols.map(([h]) => h)))
-  console.log(line(widths.map(w => '-'.repeat(w))))
-  for (const row of cells) console.log(line(row))
+if (process.argv.includes('--update-readme')) updateReadme()
+
+// Match a README library cell to a benchmarked library: porter2 is plain text,
+// the rest are link references `[name][]`
+function matchLib(cell) {
+  const t = cell.trim()
+  for (const name of byName.keys()) {
+    if (name === '../dist/index.js') { if (/^porter2\b/.test(t)) return name }
+    else if (cell.includes(`[${name}]`)) return name
+  }
+  return null
+}
+
+// Update the values in the README's benchmark table
+function updateReadme() {
+  const readmePath = path.join(__dirname, '..', 'README.md')
+  const lines = fs.readFileSync(readmePath, 'utf8').split('\n')
+  const changes = []
+  let i = 0
+  while (i < lines.length) {
+    if (!/^\s*\|/.test(lines[i])) { i++; continue }
+    let j = i
+    while (j < lines.length && /^\s*\|/.test(lines[j])) j++
+    const rewritten = rewriteTable(lines.slice(i, j), changes)
+    if (rewritten) lines.splice(i, j - i, ...rewritten)
+    i = j
+  }
+  fs.writeFileSync(readmePath, lines.join('\n'))
+  console.error(`\nUpdated ${path.relative(process.cwd(), readmePath)}`)
+}
+
+function rewriteTable(block, changes) {
+  if (block.length < 3) return null
+  const cellsOf = row => row.split('|').slice(1, -1).map(c => c.trim())
+  const headers = cellsOf(block[0])
+  const libIdx = headers.indexOf('library')
+  const nodeIdx = headers.indexOf('throughput (node)')
+  const bunIdx = headers.indexOf('throughput (bun)')
+  const slowerIdx = headers.indexOf('slower')
+  if (libIdx < 0 || (nodeIdx < 0 && bunIdx < 0)) return null // not a benchmark table
+
+  const rows = block.slice(2).map(cellsOf) // skip header + separator
+  for (const cells of rows) {
+    const name = matchLib(cells[libIdx])
+    if (!name) continue
+    const v = byName.get(name)
+    const parts = []
+    if (v.node != null && nodeIdx >= 0) { cells[nodeIdx] = `${Math.round(v.node)} kops/s`; parts.push(`node ${Math.round(v.node)}`) }
+    if (v.bun != null && bunIdx >= 0) { cells[bunIdx] = `${Math.round(v.bun)} kops/s`; parts.push(`bun ${Math.round(v.bun)}`) }
+    if (slowerIdx >= 0 && (v.node != null || v.bun != null)) cells[slowerIdx] = slowerStr(ref / (v.node ?? v.bun))
+    changes.push(`${label(name)}: ${parts.join(', ')}`)
+  }
+
+  const floor = cellsOf(block[1]).map(s => s.length)
+  const widths = headers.map((h, c) => Math.max(floor[c] ?? 0, h.length, ...rows.map(r => (r[c] ?? '').length)))
+  const render = cells => '| ' + widths.map((w, c) => (cells[c] ?? '').padEnd(w)).join(' | ') + ' |'
+  return [render(headers), render(widths.map(w => '-'.repeat(w))), ...rows.map(render)]
 }
