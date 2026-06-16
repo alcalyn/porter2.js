@@ -27,13 +27,13 @@
     "snowball"
   ],
   "devDependencies": {
-    "@stdlib/nlp-porter-stemmer": "^0.2.2",
+    "@stdlib/nlp-porter-stemmer": "^0.2.3",
     "c8": "^11.0.0",
     "porter-stemmer": "^0.9.1",
     "porter-stemmer-js": "^1.1.2",
     "stemmer": "^2.0.1",
     "stemr": "^1.0.0",
-    "typescript": "^6.0.2",
+    "typescript": "^6.0.3",
     "wink-porter2-stemmer": "^2.0.1"
   },
   "author": "eilvelia <hi@eilvelia.cat>",
